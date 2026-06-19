@@ -1,3 +1,8 @@
+---
+description: Repo structure and skill organization conventions
+alwaysApply: true
+---
+
 Skills are organized into bucket folders under `skills/`:
 
 - `engineering/` — daily code work (from upstream mattpocock/skills)
@@ -25,17 +30,3 @@ git merge upstream/main
 ```
 
 Keep personal skills in `skills/personal/` to minimize merge conflicts with upstream updates.
-
-## Agent skills
-
-### Issue tracker
-
-Issues are tracked via GitHub Issues. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Default label vocabulary (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix). See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context layout — one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.

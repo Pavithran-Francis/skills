@@ -1,12 +1,8 @@
 {
-  "name": "mattpocock-skills",
-  "version": "1.0.1",
+  "name": "pavi-skills",
+  "version": "1.0.0",
   "private": true,
-  "description": "Matt Pocock's agent skills for real engineering",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mattpocock/skills"
-  },
+  "description": "Pavi's agent skills — built on mattpocock/skills with personal additions",
   "license": "MIT",
   "scripts": {
     "changeset": "changeset",
