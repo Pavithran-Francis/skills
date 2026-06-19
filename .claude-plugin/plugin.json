@@ -26,6 +26,13 @@
     "./skills/productivity/grilling",
     "./skills/productivity/handoff",
     "./skills/productivity/teach",
-    "./skills/productivity/writing-great-skills"
+    "./skills/productivity/writing-great-skills",
+    "./vendors/caveman/skills/cavecrew",
+    "./vendors/caveman/skills/caveman-commit",
+    "./vendors/caveman/skills/caveman-compress",
+    "./vendors/caveman/skills/caveman-help",
+    "./vendors/caveman/skills/caveman-review",
+    "./vendors/caveman/skills/caveman-stats",
+    "./vendors/caveman/skills/caveman"
   ]
 }

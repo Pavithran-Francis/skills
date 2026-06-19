@@ -14,10 +14,11 @@ while IFS= read -r -d '' skill_md; do
   dir="$(dirname "$skill_md")"
   rel="./${dir#"$REPO"/}"
   skills+=("$rel")
-done < <(find "$REPO/skills" -name SKILL.md \
+done < <(find "$REPO/skills" "$REPO/vendors" -name SKILL.md \
   -not -path '*/node_modules/*' \
   -not -path '*/deprecated/*' \
   -not -path '*/in-progress/*' \
+  -not -path '*/plugins/*' \
   -print0 | sort -z)
 
 {
