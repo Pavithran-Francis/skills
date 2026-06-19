@@ -2,7 +2,9 @@
 
 Pavi's own skills — not synced from upstream.
 
-_Add your own skills here. Each skill is a folder with a `SKILL.md` file._
+**User-invoked**
+
+- **[i-am-dumb](./i-am-dumb/SKILL.md)** — Explain any concept in extreme detail as if teaching a junior developer.
 
 **From upstream (Matt Pocock):**
 
