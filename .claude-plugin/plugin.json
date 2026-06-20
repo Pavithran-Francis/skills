@@ -33,6 +33,20 @@
     "./vendors/caveman/skills/caveman-help",
     "./vendors/caveman/skills/caveman-review",
     "./vendors/caveman/skills/caveman-stats",
-    "./vendors/caveman/skills/caveman"
+    "./vendors/caveman/skills/caveman",
+    "./vendors/superpowers/skills/brainstorming",
+    "./vendors/superpowers/skills/dispatching-parallel-agents",
+    "./vendors/superpowers/skills/executing-plans",
+    "./vendors/superpowers/skills/finishing-a-development-branch",
+    "./vendors/superpowers/skills/receiving-code-review",
+    "./vendors/superpowers/skills/requesting-code-review",
+    "./vendors/superpowers/skills/subagent-driven-development",
+    "./vendors/superpowers/skills/systematic-debugging",
+    "./vendors/superpowers/skills/test-driven-development",
+    "./vendors/superpowers/skills/using-git-worktrees",
+    "./vendors/superpowers/skills/using-superpowers",
+    "./vendors/superpowers/skills/verification-before-completion",
+    "./vendors/superpowers/skills/writing-plans",
+    "./vendors/superpowers/skills/writing-skills"
   ]
 }
