@@ -2,13 +2,14 @@
 
 My centralized collection of agent skills for real engineering work. Works with Claude Code, Cursor, GitHub Copilot, and any agent that supports skills/slash commands.
 
-Built on three remotes:
+Built on four remotes:
 
-| Remote     | Repo                                                                  | Provides                        |
-|------------|-----------------------------------------------------------------------|---------------------------------|
-| `upstream` | [mattpocock/skills](https://github.com/mattpocock/skills)            | engineering, productivity, misc |
-| `caveman`  | [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)    | caveman-* token compression     |
-| `origin`   | [Pavithran-Francis/skills](https://github.com/Pavithran-Francis/skills) | personal skills, glue         |
+| Remote        | Repo                                                                  | Provides                           |
+|---------------|-----------------------------------------------------------------------|------------------------------------|
+| `upstream`    | [mattpocock/skills](https://github.com/mattpocock/skills)            | engineering, productivity, misc    |
+| `caveman`     | [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman)    | caveman-* token compression        |
+| `superpowers` | [obra/superpowers](https://github.com/obra/superpowers)               | superpowers workflow skills        |
+| `origin`      | [Pavithran-Francis/skills](https://github.com/Pavithran-Francis/skills) | personal skills, glue            |
 
 ## Setup
 
@@ -29,6 +30,9 @@ git fetch upstream && git merge upstream/main
 
 # JuliusBrussee/caveman
 git subtree pull --prefix vendors/caveman caveman main --squash
+
+# obra/superpowers
+git subtree pull --prefix vendors/superpowers superpowers main --squash
 
 # Regenerate plugin.json after any merge
 ./scripts/generate-plugin-json.sh
@@ -70,6 +74,19 @@ git subtree pull --prefix vendors/caveman caveman main --squash
 | Set up pre-commit hooks (Husky/lint-staged)   | `/setup-pre-commit`        |
 | Migrate tests to @total-typescript/shoehorn   | `/migrate-to-shoehorn`     |
 | Scaffold exercise directories for a course    | `/scaffold-exercises`      |
+| Brainstorm a design before implementing       | _(auto)_ `brainstorming`   |
+| Write an implementation plan                  | _(auto)_ `writing-plans`   |
+| Execute a plan with subagent-per-task         | _(auto)_ `subagent-driven-development` |
+| Execute a plan without subagents              | _(auto)_ `executing-plans` |
+| Dispatch parallel independent tasks           | _(auto)_ `dispatching-parallel-agents` |
+| Debug with root-cause-first discipline        | _(auto)_ `systematic-debugging` |
+| TDD red-green-refactor cycle                  | _(auto)_ `test-driven-development` |
+| Verify work before claiming done              | _(auto)_ `verification-before-completion` |
+| Request a code review via subagent            | _(auto)_ `requesting-code-review` |
+| Process code review feedback                  | _(auto)_ `receiving-code-review` |
+| Set up an isolated git worktree               | _(auto)_ `using-git-worktrees` |
+| Finish a branch (merge/PR/cleanup)            | _(auto)_ `finishing-a-development-branch` |
+| Write new skills with TDD                     | _(auto)_ `writing-skills`  |
 
 Skills marked _(auto)_ are model-invoked — the agent reaches for them when the task fits. All others require you to type the command.
 
@@ -108,6 +125,27 @@ Token compression skills. (From [JuliusBrussee/caveman](https://github.com/Juliu
 **Model-invoked**
 
 - **[cavecrew](./vendors/caveman/skills/cavecrew/SKILL.md)** — Delegate to caveman-style subagents (investigator, builder, reviewer) with ~60% smaller context injection.
+
+### Superpowers
+
+Workflow skills for planning, execution, debugging, and code review. (From [obra/superpowers](https://github.com/obra/superpowers))
+
+**Model-invoked**
+
+- **[brainstorming](./vendors/superpowers/skills/brainstorming/SKILL.md)** — Explore intent, requirements, and design through collaborative dialogue before any implementation.
+- **[writing-plans](./vendors/superpowers/skills/writing-plans/SKILL.md)** — Write comprehensive implementation plans as bite-sized tasks with full context for the implementer.
+- **[executing-plans](./vendors/superpowers/skills/executing-plans/SKILL.md)** — Load and execute a written plan with review checkpoints (for environments without subagent support).
+- **[subagent-driven-development](./vendors/superpowers/skills/subagent-driven-development/SKILL.md)** — Execute plans by dispatching a fresh subagent per task with code review after each.
+- **[dispatching-parallel-agents](./vendors/superpowers/skills/dispatching-parallel-agents/SKILL.md)** — Dispatch one agent per independent problem domain for concurrent execution.
+- **[systematic-debugging](./vendors/superpowers/skills/systematic-debugging/SKILL.md)** — Four-phase root cause analysis: always find root cause before attempting fixes.
+- **[test-driven-development](./vendors/superpowers/skills/test-driven-development/SKILL.md)** — RED-GREEN-REFACTOR cycle: write the test first, watch it fail, write minimal code to pass.
+- **[verification-before-completion](./vendors/superpowers/skills/verification-before-completion/SKILL.md)** — Run verification commands and confirm output before making any completion claims.
+- **[requesting-code-review](./vendors/superpowers/skills/requesting-code-review/SKILL.md)** — Dispatch a code reviewer subagent with precisely crafted context for evaluation.
+- **[receiving-code-review](./vendors/superpowers/skills/receiving-code-review/SKILL.md)** — Process code review feedback with technical evaluation: verify before implementing.
+- **[using-git-worktrees](./vendors/superpowers/skills/using-git-worktrees/SKILL.md)** — Ensure work happens in an isolated workspace via native tools or git worktree fallback.
+- **[finishing-a-development-branch](./vendors/superpowers/skills/finishing-a-development-branch/SKILL.md)** — Guide branch completion: verify tests, present options (merge/PR/cleanup), execute choice.
+- **[using-superpowers](./vendors/superpowers/skills/using-superpowers/SKILL.md)** — System introduction: establishes how to find and use superpowers skills at conversation start.
+- **[writing-skills](./vendors/superpowers/skills/writing-skills/SKILL.md)** — Create new skills using TDD applied to process documentation.
 
 ### Engineering
 

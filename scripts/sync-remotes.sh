@@ -44,6 +44,27 @@ else
   echo "  Already up to date."
 fi
 
+# --- superpowers (obra/superpowers) ---
+echo "Checking superpowers (obra/superpowers)..."
+git fetch superpowers
+
+SUPERPOWERS_HEAD=$(git rev-parse superpowers/main)
+
+SUPERPOWERS_SUBTREE_COMMIT=$(git log --format='%b' --grep='git-subtree-dir: vendors/superpowers' 2>/dev/null \
+  | sed -n 's/^git-subtree-split: //p' | head -1)
+
+if [ -z "$SUPERPOWERS_SUBTREE_COMMIT" ] || [ "$SUPERPOWERS_SUBTREE_COMMIT" != "$SUPERPOWERS_HEAD" ]; then
+  echo "  New changes found. Pulling superpowers subtree..."
+  if git subtree pull --prefix vendors/superpowers superpowers main --squash \
+       -m "Update superpowers subtree (obra/superpowers)" 2>/dev/null; then
+    changed=1
+  else
+    echo "  Already up to date."
+  fi
+else
+  echo "  Already up to date."
+fi
+
 # --- regenerate if anything changed ---
 if [ "$changed" = "1" ]; then
   echo "Regenerating plugin.json..."

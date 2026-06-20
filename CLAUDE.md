@@ -19,13 +19,14 @@ Every `SKILL.md` is either user-invoked (`disable-model-invocation: true`, reach
 
 ## Remotes
 
-Three remotes feed this repo:
+Four remotes feed this repo:
 
-| Remote     | Repo                           | Provides                        |
-|------------|--------------------------------|---------------------------------|
-| `upstream` | `mattpocock/skills`            | engineering, productivity, misc |
-| `caveman`  | `JuliusBrussee/caveman`        | caveman-* skills (subtree)      |
-| `origin`   | `Pavithran-Francis/skills`     | personal skills, glue           |
+| Remote        | Repo                           | Provides                           |
+|---------------|--------------------------------|------------------------------------|
+| `upstream`    | `mattpocock/skills`            | engineering, productivity, misc    |
+| `caveman`     | `JuliusBrussee/caveman`        | caveman-* skills (subtree)         |
+| `superpowers` | `obra/superpowers`             | superpowers workflow skills (subtree) |
+| `origin`      | `Pavithran-Francis/skills`     | personal skills, glue              |
 
 ### Syncing upstream (mattpocock/skills)
 
@@ -41,6 +42,15 @@ Caveman lives as a git subtree under `vendors/caveman/`.
 
 ```bash
 git subtree pull --prefix vendors/caveman caveman main --squash
+./scripts/generate-plugin-json.sh
+```
+
+### Syncing superpowers
+
+Superpowers lives as a git subtree under `vendors/superpowers/`.
+
+```bash
+git subtree pull --prefix vendors/superpowers superpowers main --squash
 ./scripts/generate-plugin-json.sh
 ```
 
