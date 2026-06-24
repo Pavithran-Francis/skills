@@ -1,0 +1,36 @@
+{
+  "name": "claude-skills",
+  "version": "1.0.0",
+  "description": "Install and manage Pavi's Claude Code skills",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "claude-skills": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "commands",
+    "lib",
+    "bundled-skills",
+    "skills.json"
+  ],
+  "scripts": {
+    "bundle": "node scripts/bundle.js",
+    "prepublishOnly": "node scripts/bundle.js"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.10.0",
+    "ansis": "^4.3.0",
+    "commander": "^13.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Pavithran-Francis/skills.git",
+    "directory": "cli"
+  },
+  "keywords": ["claude", "claude-code", "skills", "agent"],
+  "author": "Pavithran Francis <pavithranfrancis123@gmail.com>"
+}

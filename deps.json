@@ -1,0 +1,16 @@
+{
+  "grill-with-docs": ["grilling", "domain-modeling"],
+  "grill-me": ["grilling"],
+  "improve-codebase-architecture": ["codebase-design", "grilling", "domain-modeling"],
+  "ponytail-review": ["ponytail"],
+  "ponytail-audit": ["ponytail"],
+  "ponytail-debt": ["ponytail"],
+  "ponytail-gain": ["ponytail"],
+  "ponytail-help": ["ponytail"],
+  "cavecrew": ["caveman"],
+  "caveman-commit": ["caveman"],
+  "caveman-compress": ["caveman"],
+  "caveman-help": ["caveman"],
+  "caveman-review": ["caveman"],
+  "caveman-stats": ["caveman"]
+}

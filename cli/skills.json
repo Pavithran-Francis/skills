@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "name": "claude-skills",
+  "version": "1.0.0",
+  "skills": [
+    "ask-matt",
+    "brainstorming",
+    "cavecrew",
+    "caveman",
+    "caveman-commit",
+    "caveman-compress",
+    "caveman-help",
+    "caveman-review",
+    "caveman-stats",
+    "codebase-design",
+    "council",
+    "diagnosing-bugs",
+    "dispatching-parallel-agents",
+    "domain-modeling",
+    "edit-article",
+    "executing-plans",
+    "finishing-a-development-branch",
+    "git-guardrails-claude-code",
+    "grill-me",
+    "grill-with-docs",
+    "grilling",
+    "handoff",
+    "i-am-dumb",
+    "implement",
+    "improve-codebase-architecture",
+    "migrate-to-shoehorn",
+    "obsidian-vault",
+    "ponytail",
+    "ponytail-audit",
+    "ponytail-debt",
+    "ponytail-gain",
+    "ponytail-help",
+    "ponytail-review",
+    "prototype",
+    "receiving-code-review",
+    "requesting-code-review",
+    "resolving-merge-conflicts",
+    "scaffold-exercises",
+    "setup-matt-pocock-skills",
+    "setup-pre-commit",
+    "subagent-driven-development",
+    "systematic-debugging",
+    "tdd",
+    "teach",
+    "test-driven-development",
+    "to-issues",
+    "to-prd",
+    "triage",
+    "using-git-worktrees",
+    "using-superpowers",
+    "verification-before-completion",
+    "writing-great-skills",
+    "writing-plans",
+    "writing-skills"
+  ],
+  "dependsOn": {
+    "grill-with-docs": [
+      "grilling",
+      "domain-modeling"
+    ],
+    "grill-me": [
+      "grilling"
+    ],
+    "improve-codebase-architecture": [
+      "codebase-design",
+      "grilling",
+      "domain-modeling"
+    ],
+    "ponytail-review": [
+      "ponytail"
+    ],
+    "ponytail-audit": [
+      "ponytail"
+    ],
+    "ponytail-debt": [
+      "ponytail"
+    ],
+    "ponytail-gain": [
+      "ponytail"
+    ],
+    "ponytail-help": [
+      "ponytail"
+    ],
+    "cavecrew": [
+      "caveman"
+    ],
+    "caveman-commit": [
+      "caveman"
+    ],
+    "caveman-compress": [
+      "caveman"
+    ],
+    "caveman-help": [
+      "caveman"
+    ],
+    "caveman-review": [
+      "caveman"
+    ],
+    "caveman-stats": [
+      "caveman"
+    ]
+  }
+}
