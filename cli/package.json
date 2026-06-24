@@ -1,11 +1,11 @@
 {
-  "name": "claude-skills",
-  "version": "1.0.0",
+  "name": "pavidev-claude-code-skills",
+  "version": "1.0.1",
   "description": "Install and manage Pavi's Claude Code skills",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "claude-skills": "./index.js"
+    "claude-skills": "index.js"
   },
   "files": [
     "index.js",
@@ -28,9 +28,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Pavithran-Francis/skills.git",
+    "url": "git+https://github.com/Pavithran-Francis/skills.git",
     "directory": "cli"
   },
-  "keywords": ["claude", "claude-code", "skills", "agent"],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "skills",
+    "agent"
+  ],
   "author": "Pavithran Francis <pavithranfrancis123@gmail.com>"
 }
