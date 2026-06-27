@@ -20,8 +20,9 @@ export async function runSync(opts = {}) {
   const lock = await readLock(scope.lockPath);
 
   if (!lock || !Object.keys(lock.skills).length) {
-    console.error(`No lockfile found at ${scope.lockPath}. Run "add" first.`);
-    process.exit(1);
+    note(`No lockfile found at ${scope.lockPath}.\nRun "Add Skill(s)" first.`, 'Nothing to sync');
+    outro('');
+    return;
   }
 
   await ensureDirs(scope);

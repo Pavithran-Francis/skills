@@ -25,8 +25,9 @@ export async function runAdd(opts = {}) {
 
   const bundled = getBundled();
   if (!bundled.length) {
-    console.error('No bundled skills found. Run "npm run bundle" in cli/ first.');
-    process.exit(1);
+    note('No bundled skills found. Run "npm run bundle" in cli/ first.', 'Error');
+    outro('');
+    return;
   }
 
   const scopeFlags = await pickScope(opts);

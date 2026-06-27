@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "claude-skills",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "skills": [
     "ask-matt",
     "brainstorming",
