@@ -22,12 +22,12 @@ import { runCheck }  from './check.js';
 const SKIP = { skipIntro: true };
 
 const MENU = [
-  { value: 'add',    label: 'Add Skill(s)',               hint: 'install new skills' },
-  { value: 'update', label: 'Update Existing Skill(s)',   hint: 'pull latest versions' },
-  { value: 'remove', label: 'Remove Existing Skill(s)',   hint: 'uninstall skills' },
-  { value: 'list',   label: 'List Installed Skill(s)',    hint: 'show what\'s installed' },
-  { value: 'sync',   label: 'Sync/Restore from Lockfile', hint: 'restore from claude-skills-lock.json' },
-  { value: 'check',  label: 'Check Skill(s)',             hint: 'verify hashes & lockfile' },
+  { value: 'add',    label: 'Add Skill(s)',                hint: 'install new skills' },
+  { value: 'update', label: 'Update Existing Skill(s)',    hint: 'pull latest versions' },
+  { value: 'remove', label: 'Remove Existing Skill(s)',    hint: 'uninstall skills' },
+  { value: 'list',   label: 'List Installed Skill(s)',     hint: "show what's installed" },
+  { value: 'sync',   label: 'Sync/Restore from Lockfile',  hint: 'restore from claude-skills-lock.json' },
+  { value: 'check',  label: 'Check Skill(s)',              hint: 'verify hashes & lockfile' },
   { value: 'quit',   label: 'Quit' },
 ];
 
@@ -38,13 +38,21 @@ function printCompactHeader() {
   process.stdout.write('\n');
 }
 
+function restoreScreen() {
+  process.stdout.write('\x1b[?1049l');
+}
+
 export async function runHub() {
+  // Enter alternate screen buffer — isolated viewport with no scrollback accumulation.
+  // Original terminal content is restored when we exit (same as vim/less/claude-code).
+  process.stdout.write('\x1b[?1049h\x1b[2J\x1b[H');
+  process.on('exit', restoreScreen); // covers Ctrl+C, process.exit(), uncaught errors
+
   await showIntro();
 
   let first = true;
   for (;;) {
     if (!first) {
-      // Clear entire screen and show compact header instead of re-running the banner
       process.stdout.write('\x1b[2J\x1b[H');
       printCompactHeader();
     }
@@ -58,7 +66,7 @@ export async function runHub() {
       });
 
       if (choice === 'quit') {
-        process.stdout.write('\n' + muted('Goodbye.') + '\n');
+        restoreScreen();
         return;
       }
 
@@ -71,9 +79,10 @@ export async function runHub() {
     } catch (e) {
       if (e instanceof CliCancel) continue; // sub-command ESC → back to menu
       if (e?.isCancel) {                    // hub menu ESC → quit
-        process.stdout.write('\n' + muted('Goodbye.') + '\n');
+        restoreScreen();
         return;
       }
+      restoreScreen();
       throw e;
     }
   }

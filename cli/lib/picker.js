@@ -157,7 +157,9 @@ export async function skillPicker({ message, options }) {
       if (key === KEY.ENTER) {
         if (!sel.size) return;
         cleanup();
-        process.stdout.write('\x1b[2K' + success('◆') + '  ' +
+        // Clear entire picker block then write compact confirmation
+        if (lastLines > 0) process.stdout.write(`\x1b[${lastLines}A\x1b[0J`);
+        process.stdout.write(success('◆') + '  ' +
           white(`${sel.size} skill(s) selected`) + '\n');
         resolve([...sel].sort((a, b) => a - b).map(i => options[i].value));
         return;
