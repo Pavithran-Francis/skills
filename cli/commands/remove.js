@@ -1,10 +1,10 @@
-import { multiselect, note, outro, isCancel, cancel } from '@clack/prompts';
+import { multiselect, note, outro, isCancel } from '@clack/prompts';
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { showIntro } from '../lib/banner.js';
 import { readLock, writeLock, removeSkill } from '../lib/lockfile.js';
 import { resolveScope } from '../lib/scope.js';
-import { pickScope, confirmProceed } from '../lib/prompts.js';
+import { pickScope, confirmProceed, CliCancel } from '../lib/prompts.js';
 import { pathExists } from '../lib/install.js';
 import { renderRemoveSummary } from '../lib/summary.js';
 
@@ -29,7 +29,7 @@ export async function runRemove(opts = {}) {
     required: false,
   });
 
-  if (isCancel(selected)) { cancel('Cancelled.'); return; }
+  if (isCancel(selected)) throw new CliCancel();
   if (!selected?.length) { outro('Nothing selected.'); return; }
 
   if (!opts.yes) {

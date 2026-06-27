@@ -1,9 +1,11 @@
-import { select, multiselect, confirm, isCancel, cancel } from '@clack/prompts';
+import { select, multiselect, confirm, isCancel } from '@clack/prompts';
 
 export class CliCancel extends Error {}
 
+// Escape/Ctrl+C at any prompt throws CliCancel — hub catches it silently and
+// returns to the main menu (no "Cancelled." noise printed).
 function guard(v) {
-  if (isCancel(v)) { cancel('Cancelled.'); throw new CliCancel(); }
+  if (isCancel(v)) throw new CliCancel();
   return v;
 }
 

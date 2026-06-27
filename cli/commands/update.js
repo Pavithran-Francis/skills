@@ -1,11 +1,11 @@
-import { multiselect, note, outro, isCancel, cancel } from '@clack/prompts';
+import { multiselect, note, outro, isCancel } from '@clack/prompts';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { showIntro } from '../lib/banner.js';
 import { readLock, writeLock, upsertSkill } from '../lib/lockfile.js';
 import { resolveScope, ensureDirs } from '../lib/scope.js';
-import { pickScope, confirmProceed } from '../lib/prompts.js';
+import { pickScope, confirmProceed, CliCancel } from '../lib/prompts.js';
 import { materialize } from '../lib/install.js';
 import { hashSkill } from '../lib/hash.js';
 import { renderUpdateSummary } from '../lib/summary.js';
@@ -45,7 +45,7 @@ export async function runUpdate(opts = {}) {
     required: false,
   });
 
-  if (isCancel(selected)) { cancel('Cancelled.'); return; }
+  if (isCancel(selected)) throw new CliCancel();
   if (!selected?.length) { outro('Nothing selected.'); return; }
 
   if (!opts.yes) {
