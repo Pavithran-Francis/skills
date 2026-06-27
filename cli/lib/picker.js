@@ -106,13 +106,12 @@ export async function skillPicker({ message, options }) {
 
   function draw() {
     const lines = renderGrid();
-    // Go up by however many lines we drew last time
-    if (lastLines > 0) {
-      process.stdout.write(`\x1b[${lastLines}A`);
-    }
+    if (lastLines > 0) process.stdout.write(`\x1b[${lastLines}A`);
     for (const line of lines) {
       process.stdout.write('\x1b[2K' + line + '\n');
     }
+    // Erase any leftover content from a previously taller render
+    process.stdout.write('\x1b[0J');
     lastLines = lines.length;
   }
 

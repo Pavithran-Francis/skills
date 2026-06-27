@@ -1,6 +1,10 @@
 import ansis from 'ansis';
 
-export const BRAND_HEX = '#FF69B4'; // hot pink
+// ── Colour mode ─────────────────────────────────────────────────────────────
+// Flip PRIDE_MODE to true for pride month to restore rainbow palette.
+export const PRIDE_MODE = false;
+
+export const BRAND_HEX = '#B91919'; // metallic crimson
 
 const ok = () => !process.env.NO_COLOR && ansis.isSupported();
 
@@ -11,25 +15,30 @@ export const muted   = t => ok() ? ansis.dim(t) : t;
 export const white   = t => ok() ? ansis.white(t) : t;
 export const strip   = t => ansis.strip(t);
 
-// ── Pride mode ─────────────────────────────────────────────────────────────
-// Set to false after June to revert skill names to brand pink.
-export const PRIDE_MODE = true;
-
-const PRIDE_PALETTE = [
-  [220,  30,  30],   // red
-  [255, 140,   0],   // orange
-  [220, 200,   0],   // yellow
-  [ 30, 185,  30],   // green
-  [ 30, 100, 255],   // blue
-  [150,  30, 230],   // purple
+// Metallic crimson — bright at index 0, steps down, then back up (cycling shimmer)
+const CRIMSON = [
+  [235,  60,  60],
+  [210,  38,  38],
+  [185,  25,  25],
+  [160,  15,  15],
+  [185,  25,  25],
+  [210,  38,  38],
 ];
 
-// Returns a color function for the nth skill. Cycles through pride palette in
-// PRIDE_MODE, falls back to brand pink otherwise.
+// Pride rainbow — restore for pride month
+const PRIDE_PALETTE = [
+  [220,  30,  30],
+  [255, 140,   0],
+  [220, 200,   0],
+  [ 30, 185,  30],
+  [ 30, 100, 255],
+  [150,  30, 230],
+];
+
 export function skillColor(index) {
   if (!ok()) return t => t;
-  if (!PRIDE_MODE) return brand;
-  const [r, g, b] = PRIDE_PALETTE[index % PRIDE_PALETTE.length];
+  const palette = PRIDE_MODE ? PRIDE_PALETTE : CRIMSON;
+  const [r, g, b] = palette[index % palette.length];
   return t => ansis.rgb(r, g, b)(t);
 }
 

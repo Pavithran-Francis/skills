@@ -23,20 +23,21 @@ const SKILLS_LINES = [
 const ART = [...CLAUDE_LINES, ...SKILLS_LINES];
 const MAX_WIDTH = Math.max(...ART.map(l => l.length));
 
-// One pride stripe per art line (12 lines → 2 lines per colour)
+// Colour palette per art line — crimson gradient top → deep red bottom.
+// To restore pride rainbow: replace each entry with the pride colours.
 const PRIDE = [
-  [220,  30,  30], // red
-  [220,  30,  30],
-  [255, 140,   0], // orange
-  [255, 140,   0],
-  [255, 210,   0], // yellow
-  [255, 210,   0],
-  [ 30, 185,  30], // green
-  [ 30, 185,  30],
-  [ 30, 100, 255], // blue
-  [ 30, 100, 255],
-  [150,  30, 230], // purple
-  [150,  30, 230],
+  [240,  65,  65],
+  [230,  55,  55],
+  [215,  42,  42],
+  [200,  32,  32],
+  [185,  25,  25],
+  [170,  18,  18],
+  [155,  13,  13],
+  [140,  10,  10],
+  [125,   8,   8],
+  [110,   6,   6],
+  [ 95,   4,   4],
+  [ 80,   3,   3],
 ];
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
