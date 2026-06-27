@@ -1,5 +1,6 @@
 import { select, multiselect, confirm, isCancel } from '@clack/prompts';
 import ansis from 'ansis';
+import { skillColor, white, muted, divider } from './theme.js';
 
 export class CliCancel extends Error {}
 
@@ -28,9 +29,10 @@ export async function pickSkills(names, flags = {}, descriptions = {}) {
   if (flags.skill?.length) return flags.skill;
   return guard(await multiselect({
     message: 'Select skills  (space to toggle, a for all, enter to confirm)',
-    options: names.map(n => {
-      const desc = descriptions[n] ? ansis.dim('  ' + descriptions[n].slice(0, 50)) : '';
-      return { value: n, label: n.padEnd(34) + desc };
+    options: names.map((n, i) => {
+      const name = skillColor(i)(ansis.bold(n.padEnd(32)));
+      const desc = descriptions[n] ? white(descriptions[n].slice(0, 52)) : '';
+      return { value: n, label: name + divider + desc };
     }),
     required: true,
   }));
