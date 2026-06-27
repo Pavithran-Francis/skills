@@ -24,18 +24,22 @@ export async function inlineSelect({ message, hint = '↑↓ navigate · enter s
   let cursor = 0;
   let lastLines = 0;
 
+  // Pre-compute max label width so all descriptions align to the same column
+  const maxLen = Math.max(...options.map(o => o.label.length));
+
   function renderLines() {
     const out = [];
     // Title line — no hints here (moved to footer bar)
     out.push(brand('◆') + '  ' + ansis.bold(white(message)));
     out.push(muted('│'));
     for (let i = 0; i < options.length; i++) {
-      const focused = i === cursor;
-      const arrow   = focused ? ansis.bold(ansis.white('▶')) : ' ';
-      const label   = focused
-        ? ansis.bold(ansis.white(options[i].label))
-        : muted(options[i].label);
-      const desc    = options[i].hint ? '  ' + muted(options[i].hint) : '';
+      const focused  = i === cursor;
+      const arrow    = focused ? ansis.bold(ansis.white('▶')) : ' ';
+      const pad      = ' '.repeat(maxLen - options[i].label.length);
+      const label    = focused
+        ? ansis.bold(ansis.white(options[i].label)) + pad
+        : muted(options[i].label) + pad;
+      const desc     = options[i].hint ? '  ' + muted(options[i].hint) : '';
       out.push(muted('│') + '  ' + arrow + ' ' + label + desc);
     }
     out.push(muted('│'));

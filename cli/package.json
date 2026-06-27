@@ -1,6 +1,6 @@
 {
   "name": "claude-agent-skills",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Install and manage Pavi's Claude Code agent skills",
   "license": "MIT",
   "type": "module",
