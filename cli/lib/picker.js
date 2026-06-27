@@ -70,9 +70,9 @@ export async function skillPicker({ message, options }) {
         const focused = idx === cursor;
         const checked = sel.has(idx);
         const box     = checked ? success('■') : muted('□');
-        const arrow   = focused ? brand('▶') : ' ';
+        const arrow   = focused ? ansis.bold(ansis.white('▶')) : ' ';
         const label   = focused
-          ? ansis.bold(skillColor(idx)(opt.label))
+          ? ansis.bold(ansis.white(opt.label))
           : skillColor(idx)(opt.label);
         const cell = `${arrow}${box} ${label}`;
         // Pad to colW (accounting for invisible ANSI chars: pad by name length, not cell length)

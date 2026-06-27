@@ -15,15 +15,8 @@ export const muted   = t => ok() ? ansis.dim(t) : t;
 export const white   = t => ok() ? ansis.white(t) : t;
 export const strip   = t => ansis.strip(t);
 
-// Metallic crimson — bright at index 0, steps down, then back up (cycling shimmer)
-const CRIMSON = [
-  [235,  60,  60],
-  [210,  38,  38],
-  [185,  25,  25],
-  [160,  15,  15],
-  [185,  25,  25],
-  [210,  38,  38],
-];
+// Single consistent crimson — all skills the same colour
+const CRIMSON = [[200, 35, 35]];
 
 // Pride rainbow — restore for pride month
 const PRIDE_PALETTE = [

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "claude-agent-skills",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "skills": [
     "ask-matt",
     "brainstorming",
