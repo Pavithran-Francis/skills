@@ -1,146 +1,172 @@
+/**
+ * Custom skill picker — grid layout, full description panel for focused skill.
+ * Navigation: ↑↓←→  space=toggle  a=all  enter=confirm  esc=back
+ */
 import ansis from 'ansis';
-import { skillColor, white, muted, success, brand } from './theme.js';
+import { skillColor, white, muted, success, brand, warn } from './theme.js';
 
-const UP      = '\x1b[A';
-const DOWN    = '\x1b[B';
-const SPACE   = ' ';
-const ENTER   = '\r';
-const CTRL_C  = '\x03';
-const ESC     = '\x1b';
-
-const clr  = () => process.stdout.write('\x1b[2K');
-const up   = n => process.stdout.write(`\x1b[${n}A`);
-const nl   = ()  => process.stdout.write('\n');
+const KEY = {
+  UP:     '\x1b[A',
+  DOWN:   '\x1b[B',
+  RIGHT:  '\x1b[C',
+  LEFT:   '\x1b[D',
+  SPACE:  ' ',
+  ENTER:  '\r',
+  CTRL_C: '\x03',
+  ESC:    '\x1b',
+};
 
 function wordWrap(text, width) {
   const words = text.split(' ');
   const lines = [];
-  let line = '';
+  let cur = '';
   for (const w of words) {
-    if (line && line.length + 1 + w.length > width) { lines.push(line); line = w; }
-    else line = line ? `${line} ${w}` : w;
+    if (cur && cur.length + 1 + w.length > width) { lines.push(cur); cur = w; }
+    else cur = cur ? `${cur} ${w}` : w;
   }
-  if (line) lines.push(line);
+  if (cur) lines.push(cur);
   return lines;
 }
 
-function writeLine(s = '') {
-  clr();
-  process.stdout.write(s + '\n');
-}
-
 export async function skillPicker({ message, options }) {
-  const termW   = process.stdout.columns || 100;
-  const termH   = process.stdout.rows    || 30;
+  const termW = process.stdout.columns || 100;
+  const termH = process.stdout.rows    || 40;
 
-  const DESC_LINES  = 3;
-  const FOOTER_LINES = 2;
-  const HEADER_LINES = 2;
-  const VISIBLE = Math.min(options.length, Math.max(6, termH - HEADER_LINES - 1 - DESC_LINES - FOOTER_LINES));
+  // Grid dimensions
+  const maxName = Math.max(...options.map(o => o.label.length));
+  const colW    = maxName + 6;                             // □ name + padding
+  const numCols = Math.max(1, Math.floor((termW - 2) / colW));
+  const numRows = Math.ceil(options.length / numCols);
 
-  let cursor    = 0;
-  let scrollTop = 0;
-  const sel     = new Set();
+  // Fixed layout heights
+  const HEADER   = 2;
+  const GRID_H   = numRows;
+  const SEP      = 1;
+  const DESC_H   = Math.max(4, Math.min(8, termH - HEADER - GRID_H - SEP - 3));
+  const FOOTER   = 1;
+  const TOTAL    = HEADER + GRID_H + SEP + DESC_H + FOOTER;
 
-  function ensureVisible() {
-    if (cursor < scrollTop) scrollTop = cursor;
-    if (cursor >= scrollTop + VISIBLE) scrollTop = cursor - VISIBLE + 1;
+  let cursor = 0;
+  const sel  = new Set();
+  let lastLines = 0;
+
+  function clamp(c) {
+    return Math.max(0, Math.min(options.length - 1, c));
   }
 
-  function render(first = false) {
-    const totalLines = HEADER_LINES + VISIBLE + 1 + DESC_LINES + FOOTER_LINES;
-    if (!first) { up(totalLines); }
+  function renderGrid() {
+    const lines = [];
 
     // Header
-    writeLine(brand('◆') + '  ' + white(message));
-    writeLine(muted('│'));
+    lines.push(brand('◆') + '  ' + ansis.bold(white(message)) +
+      muted('  ↑↓←→ navigate · space toggle · a=all · enter confirm · esc back'));
+    lines.push(muted('│'));
 
-    // Skill list
-    for (let i = 0; i < VISIBLE; i++) {
-      const idx = scrollTop + i;
-      if (idx >= options.length) { writeLine(muted('│')); continue; }
-      const opt       = options[idx];
-      const focused   = idx === cursor;
-      const checked   = sel.has(idx);
-      const bullet    = checked ? success('■') : muted('□');
-      const nameStr   = focused
-        ? ansis.bold(skillColor(idx)(opt.label))
-        : skillColor(idx)(opt.label);
-      const cursor_   = focused ? brand('▶') : ' ';
-      writeLine(`${muted('│')} ${cursor_} ${bullet} ${nameStr}`);
+    // Grid rows
+    for (let r = 0; r < numRows; r++) {
+      let row = muted('│') + ' ';
+      for (let c = 0; c < numCols; c++) {
+        const idx = r * numCols + c;
+        if (idx >= options.length) break;
+        const opt     = options[idx];
+        const focused = idx === cursor;
+        const checked = sel.has(idx);
+        const box     = checked ? success('■') : muted('□');
+        const arrow   = focused ? brand('▶') : ' ';
+        const label   = focused
+          ? ansis.bold(skillColor(idx)(opt.label))
+          : skillColor(idx)(opt.label);
+        const cell = `${arrow}${box} ${label}`;
+        // Pad to colW (accounting for invisible ANSI chars: pad by name length, not cell length)
+        const visLen   = 3 + opt.label.length;           // arrow(1) + box(1) + space(1) + name
+        const pad      = Math.max(0, colW - visLen);
+        row += cell + ' '.repeat(pad);
+      }
+      lines.push(row);
     }
 
-    // Separator + description panel
-    const divW = Math.min(termW - 2, 72);
-    writeLine(muted('├' + '─'.repeat(divW) + '┤'));
+    // Separator + description
+    lines.push(muted('├' + '─'.repeat(Math.min(termW - 2, 78)) + '┤'));
 
     const focused = options[cursor];
-    const desc    = focused?.description || '';
-    const descW   = termW - 6;
-    const wrapped = desc ? wordWrap(desc, descW) : [];
-
-    for (let i = 0; i < DESC_LINES; i++) {
+    const desc    = focused?.description ?? '';
+    const wrapped = desc ? wordWrap(desc, termW - 6) : [];
+    for (let i = 0; i < DESC_H; i++) {
       const line = wrapped[i] ?? '';
-      writeLine(muted('│ ') + white(line));
+      lines.push(muted('│ ') + white(line));
     }
 
     // Footer
-    const scrollHint = options.length > VISIBLE
-      ? muted(`  ${scrollTop + 1}–${Math.min(scrollTop + VISIBLE, options.length)} of ${options.length}`)
-      : '';
-    writeLine(muted('│'));
-    writeLine(
-      muted('  ↑↓ navigate') + '  ' +
-      muted('space toggle') + '  ' +
-      muted('a = all') + '  ' +
-      success(`${sel.size} selected`) + '  ' +
-      muted('enter confirm') + '  ' +
-      muted('esc back') +
-      scrollHint
+    const selCount = sel.size;
+    lines.push(
+      '  ' + (selCount > 0 ? success(`${selCount} selected`) : muted('0 selected')) +
+      muted(`  ·  ${cursor + 1} of ${options.length}`)
     );
+
+    return lines;
   }
 
-  // Reserve space
-  process.stdout.write('\n'.repeat(HEADER_LINES + VISIBLE + 1 + DESC_LINES + FOOTER_LINES));
-  render(false);
+  function draw() {
+    const lines = renderGrid();
+    // Go up by however many lines we drew last time
+    if (lastLines > 0) {
+      process.stdout.write(`\x1b[${lastLines}A`);
+    }
+    for (const line of lines) {
+      process.stdout.write('\x1b[2K' + line + '\n');
+    }
+    lastLines = lines.length;
+  }
+
+  // Initial draw
+  draw();
 
   return new Promise((resolve, reject) => {
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.setEncoding('utf8');
 
-    function done(result) {
+    function cleanup() {
       process.stdin.setRawMode(false);
       process.stdin.pause();
       process.stdin.removeAllListeners('data');
-      if (result !== null) {
-        nl();
-        process.stdout.write(success('◆') + '  ' + white(`${result.length} skill(s) selected`) + '\n');
-      }
-      resolve(result);
+    }
+
+    function cancel() {
+      cleanup();
+      reject(Object.assign(new Error('cancel'), { isCancel: true }));
     }
 
     process.stdin.on('data', key => {
-      if (key === CTRL_C) { done(null); reject(Object.assign(new Error('cancel'), { isCancel: true })); return; }
-      if (key === ESC)    { done(null); reject(Object.assign(new Error('cancel'), { isCancel: true })); return; }
+      const row = Math.floor(cursor / numCols);
+      const col = cursor % numCols;
 
-      if (key === UP) {
-        if (cursor > 0) { cursor--; ensureVisible(); }
-      } else if (key === DOWN) {
-        if (cursor < options.length - 1) { cursor++; ensureVisible(); }
-      } else if (key === SPACE) {
+      if (key === KEY.CTRL_C) { cleanup(); process.exit(0); }
+      if (key === KEY.ESC)    { cancel(); return; }
+
+      if (key === KEY.UP)    cursor = clamp((row - 1) * numCols + col);
+      if (key === KEY.DOWN)  cursor = clamp((row + 1) * numCols + col);
+      if (key === KEY.LEFT)  cursor = clamp(cursor - 1);
+      if (key === KEY.RIGHT) cursor = clamp(cursor + 1);
+
+      if (key === KEY.SPACE) {
         sel.has(cursor) ? sel.delete(cursor) : sel.add(cursor);
-      } else if (key === 'a' || key === 'A') {
+      }
+      if (key === 'a' || key === 'A') {
         sel.size === options.length
           ? sel.clear()
           : options.forEach((_, i) => sel.add(i));
-      } else if (key === ENTER) {
+      }
+      if (key === KEY.ENTER) {
         if (!sel.size) return;
-        done([...sel].sort((a, b) => a - b).map(i => options[i].value));
+        cleanup();
+        process.stdout.write('\x1b[2K' + success('◆') + '  ' +
+          white(`${sel.size} skill(s) selected`) + '\n');
+        resolve([...sel].sort((a, b) => a - b).map(i => options[i].value));
         return;
       }
 
-      render(false);
+      draw();
     });
   });
 }
