@@ -27,11 +27,22 @@ export async function pickScope(flags = {}) {
 export async function pickSkills(names, flags = {}, descriptions = {}) {
   if (flags.all) return names;
   if (flags.skill?.length) return flags.skill;
+
+  // Calculate description width from actual terminal columns.
+  // prefix=4 (clack's "□ "), nameCol=32, divider=3 (" │ ")
+  const termWidth = process.stdout.columns || 100;
+  const descWidth = Math.max(20, termWidth - 4 - 32 - 3);
+
+  function fitDesc(s) {
+    if (!s) return '';
+    return s.length <= descWidth ? s : s.slice(0, descWidth - 1) + '…';
+  }
+
   return guard(await multiselect({
     message: 'Select skills  (space to toggle, a for all, enter to confirm)',
     options: names.map((n, i) => {
       const name = skillColor(i)(ansis.bold(n.padEnd(32)));
-      const desc = descriptions[n] ? white(descriptions[n].slice(0, 52)) : '';
+      const desc = descriptions[n] ? white(fitDesc(descriptions[n])) : '';
       return { value: n, label: name + divider + desc };
     }),
     required: true,
