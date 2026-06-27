@@ -89,6 +89,13 @@ async function renderStatic() {
   renderFrame(staticColor);
 }
 
+function printSubtitle() {
+  const silver = s => ansis.rgb(190, 190, 190)(s);
+  process.stdout.write('\n');
+  process.stdout.write(silver('Agent Skills for Claude Code by Pavithran Francis') + '\n\n');
+  process.stdout.write(muted('Repository: ') + silver(REPO) + '\n\n');
+}
+
 /**
  * showIntro()              — full two-sweep entrance + subtitle (call ONCE at startup)
  * showIntro({ skip:true }) — no-op (used inside sub-commands called from hub)
@@ -100,10 +107,14 @@ export async function showIntro({ skip = false } = {}) {
 
   await runSweep({ step: 3, fps: 55 }); // first sweep  (~0.8 s)
   await runSweep({ step: 3, fps: 55 }); // second sweep (~0.8 s)
-  await renderStatic();                  // settle to metallic pride
+  await renderStatic();                  // settle to metallic state
 
-  const silver = s => ansis.rgb(190, 190, 190)(s);
-  process.stdout.write('\n');
-  process.stdout.write(silver('Agent Skills for Claude Code by Pavithran Francis') + '\n\n');
-  process.stdout.write(muted('Repository: ') + silver(REPO) + '\n\n');
+  printSubtitle();
+}
+
+/** Static banner with no animation — used on hub loop iterations after the first. */
+export async function showIntroStatic() {
+  process.stdout.write('\n'.repeat(ART.length));
+  await renderStatic();
+  printSubtitle();
 }

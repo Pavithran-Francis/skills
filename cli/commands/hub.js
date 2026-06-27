@@ -2,10 +2,8 @@ import updateNotifier from 'update-notifier';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import ansis from 'ansis';
-import { showIntro } from '../lib/banner.js';
+import { showIntro, showIntroStatic } from '../lib/banner.js';
 import { CliCancel } from '../lib/prompts.js';
-import { brand, muted, white } from '../lib/theme.js';
 import { inlineSelect } from '../lib/inlineSelect.js';
 
 const req = createRequire(import.meta.url);
@@ -31,30 +29,23 @@ const MENU = [
   { value: 'quit',   label: 'Quit' },
 ];
 
-function printCompactHeader() {
-  const silver = s => ansis.rgb(190, 190, 190)(s);
-  process.stdout.write('\n');
-  process.stdout.write(brand('◈ CLAUDE SKILLS') + '  ' + silver('Agent Skills for Claude Code') + '\n');
-  process.stdout.write('\n');
-}
-
 function restoreScreen() {
   process.stdout.write('\x1b[?1049l');
 }
 
 export async function runHub() {
-  // Enter alternate screen buffer — isolated viewport with no scrollback accumulation.
-  // Original terminal content is restored when we exit (same as vim/less/claude-code).
+  // Alternate screen buffer — isolated viewport, no scrollback. Restored on exit like vim/less.
   process.stdout.write('\x1b[?1049h\x1b[2J\x1b[H');
-  process.on('exit', restoreScreen); // covers Ctrl+C, process.exit(), uncaught errors
+  process.on('exit', restoreScreen);
 
-  await showIntro();
+  await showIntro(); // animated banner on first load
 
   let first = true;
   for (;;) {
     if (!first) {
+      // Clear alt screen and re-render the static banner so it's always visible
       process.stdout.write('\x1b[2J\x1b[H');
-      printCompactHeader();
+      await showIntroStatic();
     }
     first = false;
 
@@ -65,10 +56,7 @@ export async function runHub() {
         options: MENU,
       });
 
-      if (choice === 'quit') {
-        restoreScreen();
-        return;
-      }
+      if (choice === 'quit') { restoreScreen(); return; }
 
       if (choice === 'add')    await runAdd(SKIP);
       if (choice === 'update') await runUpdate(SKIP);
@@ -78,10 +66,7 @@ export async function runHub() {
       if (choice === 'check')  await runCheck(SKIP);
     } catch (e) {
       if (e instanceof CliCancel) continue; // sub-command ESC → back to menu
-      if (e?.isCancel) {                    // hub menu ESC → quit
-        restoreScreen();
-        return;
-      }
+      if (e?.isCancel) { restoreScreen(); return; } // hub menu ESC → quit
       restoreScreen();
       throw e;
     }
