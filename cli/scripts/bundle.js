@@ -8,13 +8,28 @@ function extractDescription(skillDir) {
   try {
     const lines = readFileSync(join(skillDir, 'SKILL.md'), 'utf8').split('\n');
     let inFrontmatter = false;
+    const chunks = [];
+    let collecting = false;
+
     for (let i = 0; i < lines.length; i++) {
       const t = lines[i].trim();
       if (i === 0 && t === '---') { inFrontmatter = true; continue; }
       if (inFrontmatter) { if (t === '---') inFrontmatter = false; continue; }
-      if (!t || t.startsWith('#') || t.startsWith('<!--') || t.startsWith('>')) continue;
-      return t.slice(0, 80);
+      if (t.startsWith('#') || t.startsWith('<!--') || t.startsWith('>')) continue;
+
+      if (!t) {
+        // Blank line: stop after collecting at least one chunk
+        if (collecting) break;
+        continue;
+      }
+
+      chunks.push(t);
+      collecting = true;
+      if (chunks.join(' ').length >= 180) break;
     }
+
+    const full = chunks.join(' ');
+    return full.length > 200 ? full.slice(0, 199) + '…' : full;
   } catch { /* skip */ }
   return '';
 }

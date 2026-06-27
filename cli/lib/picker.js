@@ -42,9 +42,8 @@ export async function skillPicker({ message, options }) {
   const HEADER   = 2;
   const GRID_H   = numRows;
   const SEP      = 1;
-  const DESC_H   = Math.max(4, Math.min(8, termH - HEADER - GRID_H - SEP - 3));
+  const DESC_H   = Math.max(5, Math.min(8, termH - HEADER - GRID_H - SEP - 3));
   const FOOTER   = 1;
-  const TOTAL    = HEADER + GRID_H + SEP + DESC_H + FOOTER;
 
   let cursor = 0;
   const sel  = new Set();
@@ -90,7 +89,9 @@ export async function skillPicker({ message, options }) {
 
     const focused = options[cursor];
     const desc    = focused?.description ?? '';
-    const wrapped = desc ? wordWrap(desc, termW - 6) : [];
+    // Cap wrap at 72 chars so descriptions always break into multiple lines
+    const wrapW   = Math.min(termW - 6, 72);
+    const wrapped = desc ? wordWrap(desc, wrapW) : [];
     for (let i = 0; i < DESC_H; i++) {
       const line = wrapped[i] ?? '';
       lines.push(muted('│ ') + white(line));
