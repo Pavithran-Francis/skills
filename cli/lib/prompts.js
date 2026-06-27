@@ -1,12 +1,11 @@
-import { select, confirm, isCancel } from '@clack/prompts';
+import { confirm, isCancel } from '@clack/prompts';
 import ansis from 'ansis';
 import { skillColor, white, muted, divider } from './theme.js';
 import { skillPicker } from './picker.js';
+import { inlineSelect } from './inlineSelect.js';
 
 export class CliCancel extends Error {}
 
-// Escape/Ctrl+C at any prompt throws CliCancel — hub catches it silently and
-// returns to the main menu (no "Cancelled." noise printed).
 function guard(v) {
   if (isCancel(v)) throw new CliCancel();
   return v;
@@ -15,13 +14,14 @@ function guard(v) {
 export async function pickScope(flags = {}) {
   if (flags.global) return { global: true };
   if (flags.project) return { project: true };
-  const v = guard(await select({
+  const v = await inlineSelect({
     message: 'Select scope',
+    hint: '↑↓ navigate · enter select · esc back',
     options: [
-      { value: 'global',  label: 'Global (~/.claude/skills + ~/.agents/skills)' },
-      { value: 'project', label: 'Project (.claude/skills in current directory)' },
+      { value: 'global',  label: 'Global',  hint: '~/.claude/skills + ~/.agents/skills' },
+      { value: 'project', label: 'Project', hint: '.claude/skills in current directory' },
     ],
-  }));
+  }).catch(e => { if (e?.isCancel) throw new CliCancel(); throw e; });
   return { global: v === 'global' };
 }
 
