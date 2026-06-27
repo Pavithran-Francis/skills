@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { showIntro, showIntroStatic } from '../lib/banner.js';
 import { CliCancel } from '../lib/prompts.js';
+import { brand, muted } from '../lib/theme.js';
 import { inlineSelect } from '../lib/inlineSelect.js';
 
 const req = createRequire(import.meta.url);
@@ -33,6 +34,45 @@ function restoreScreen() {
   process.stdout.write('\x1b[?1049l');
 }
 
+/** Show a live countdown then return — lets the user read command output before menu clears. */
+async function pauseBeforeReturn(seconds = 5) {
+  let remaining = seconds;
+  const render = () => process.stdout.write(
+    `\r\x1b[2K  ${brand('◂')} ${muted(`returning to menu in ${remaining}s  ·  press any key`)}`
+  );
+
+  process.stdout.write('\n');
+  render();
+
+  return new Promise(resolve => {
+    let done = false;
+    function cleanup() {
+      if (done) return;
+      done = true;
+      clearInterval(tick);
+      process.stdin.setRawMode(false);
+      process.stdin.pause();
+      process.stdin.removeAllListeners('data');
+      process.stdout.write('\n');
+    }
+
+    const tick = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) { cleanup(); resolve(); }
+      else render();
+    }, 1000);
+
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
+    process.stdin.on('data', key => {
+      if (key === '\x03') { cleanup(); process.exit(0); }
+      cleanup();
+      resolve();
+    });
+  });
+}
+
 export async function runHub() {
   // Alternate screen buffer — isolated viewport, no scrollback. Restored on exit like vim/less.
   process.stdout.write('\x1b[?1049h\x1b[2J\x1b[H');
@@ -43,9 +83,8 @@ export async function runHub() {
   let first = true;
   for (;;) {
     if (!first) {
-      // Clear alt screen and re-render the static banner so it's always visible
       process.stdout.write('\x1b[2J\x1b[H');
-      await showIntroStatic();
+      await showIntroStatic(); // static banner — always visible on return to menu
     }
     first = false;
 
@@ -64,9 +103,12 @@ export async function runHub() {
       if (choice === 'list')   await runList(SKIP);
       if (choice === 'sync')   await runSync(SKIP);
       if (choice === 'check')  await runCheck(SKIP);
+
+      // Pause so user can read command output before the screen clears
+      await pauseBeforeReturn();
     } catch (e) {
-      if (e instanceof CliCancel) continue; // sub-command ESC → back to menu
-      if (e?.isCancel) { restoreScreen(); return; } // hub menu ESC → quit
+      if (e instanceof CliCancel) continue; // ESC from sub-step → back to menu immediately
+      if (e?.isCancel) { restoreScreen(); return; }
       restoreScreen();
       throw e;
     }

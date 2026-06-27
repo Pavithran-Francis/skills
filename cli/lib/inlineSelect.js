@@ -13,13 +13,21 @@ const KEY = {
   ESC:    '\x1b',
 };
 
+function formatHints(str) {
+  return '  ' + brand('►► ') + str.split(' · ').map(part => {
+    const [key, ...rest] = part.trim().split(' ');
+    return ansis.bold(ansis.white(key)) + (rest.length ? muted(' ' + rest.join(' ')) : '');
+  }).join(muted('  ·  '));
+}
+
 export async function inlineSelect({ message, hint = '↑↓ navigate · enter select · esc back', options }) {
   let cursor = 0;
   let lastLines = 0;
 
   function renderLines() {
     const out = [];
-    out.push(brand('◆') + '  ' + ansis.bold(white(message)) + '  ' + muted(hint));
+    // Title line — no hints here (moved to footer bar)
+    out.push(brand('◆') + '  ' + ansis.bold(white(message)));
     out.push(muted('│'));
     for (let i = 0; i < options.length; i++) {
       const focused = i === cursor;
@@ -31,6 +39,8 @@ export async function inlineSelect({ message, hint = '↑↓ navigate · enter s
       out.push(muted('│') + '  ' + arrow + ' ' + label + desc);
     }
     out.push(muted('│'));
+    // Dedicated hint footer bar
+    out.push(formatHints(hint));
     return out;
   }
 

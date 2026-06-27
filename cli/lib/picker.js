@@ -3,7 +3,14 @@
  * Navigation: ↑↓←→  space=toggle  a=all  enter=confirm  esc=back
  */
 import ansis from 'ansis';
-import { skillColor, white, muted, success, brand, warn } from './theme.js';
+import { skillColor, white, muted, success, brand } from './theme.js';
+
+function formatHints(str) {
+  return '  ' + brand('►► ') + str.split(' · ').map(part => {
+    const [key, ...rest] = part.trim().split(' ');
+    return ansis.bold(ansis.white(key)) + (rest.length ? muted(' ' + rest.join(' ')) : '');
+  }).join(muted('  ·  '));
+}
 
 const KEY = {
   UP:     '\x1b[A',
@@ -52,12 +59,13 @@ export async function skillPicker({ message, options }) {
     return Math.max(0, Math.min(options.length - 1, c));
   }
 
+  const HINT = '↑↓←→ navigate · space toggle · a=all · enter confirm · esc back';
+
   function renderGrid() {
     const lines = [];
 
-    // Header
-    lines.push(brand('◆') + '  ' + ansis.bold(white(message)) +
-      muted('  ↑↓←→ navigate · space toggle · a=all · enter confirm · esc back'));
+    // Header — title only, hints moved to footer bar
+    lines.push(brand('◆') + '  ' + ansis.bold(white(message)));
     lines.push(muted('│'));
 
     // Grid rows
@@ -94,12 +102,13 @@ export async function skillPicker({ message, options }) {
       lines.push(muted('│ ') + white(line));
     }
 
-    // Footer
+    // Footer — count + hint bar
     const selCount = sel.size;
     lines.push(
       '  ' + (selCount > 0 ? success(`${selCount} selected`) : muted('0 selected')) +
       muted(`  ·  ${cursor + 1} of ${options.length}`)
     );
+    lines.push(formatHints(HINT));
 
     return lines;
   }
