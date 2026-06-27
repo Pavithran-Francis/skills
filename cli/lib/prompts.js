@@ -1,4 +1,5 @@
 import { select, multiselect, confirm, isCancel } from '@clack/prompts';
+import ansis from 'ansis';
 
 export class CliCancel extends Error {}
 
@@ -26,8 +27,11 @@ export async function pickSkills(names, flags = {}, descriptions = {}) {
   if (flags.all) return names;
   if (flags.skill?.length) return flags.skill;
   return guard(await multiselect({
-    message: 'Select skills to install (space to toggle, a for all, enter to confirm)',
-    options: names.map(n => ({ value: n, label: n, hint: descriptions[n] || undefined })),
+    message: 'Select skills  (space to toggle, a for all, enter to confirm)',
+    options: names.map(n => {
+      const desc = descriptions[n] ? ansis.dim('  ' + descriptions[n].slice(0, 50)) : '';
+      return { value: n, label: n.padEnd(34) + desc };
+    }),
     required: true,
   }));
 }
