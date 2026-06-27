@@ -4,6 +4,21 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 
+function extractDescription(skillDir) {
+  try {
+    const lines = readFileSync(join(skillDir, 'SKILL.md'), 'utf8').split('\n');
+    let inFrontmatter = false;
+    for (let i = 0; i < lines.length; i++) {
+      const t = lines[i].trim();
+      if (i === 0 && t === '---') { inFrontmatter = true; continue; }
+      if (inFrontmatter) { if (t === '---') inFrontmatter = false; continue; }
+      if (!t || t.startsWith('#') || t.startsWith('<!--') || t.startsWith('>')) continue;
+      return t.slice(0, 80);
+    }
+  } catch { /* skip */ }
+  return '';
+}
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..', '..');
 const bundleDir = join(__dirname, '..', 'bundled-skills');
@@ -37,13 +52,18 @@ for (const bucket of ['skills', 'vendors']) {
 const req = createRequire(import.meta.url);
 const dependsOn = req(join(repoRoot, 'deps.json'));
 
-// Generate cli/skills.json with current skill list + deps
+const sortedSkills = bundled.sort();
+const descriptions = {};
+for (const name of sortedSkills) descriptions[name] = extractDescription(join(bundleDir, name));
+
+// Generate cli/skills.json with current skill list + deps + descriptions
 const manifest = {
   schema_version: 1,
-  name: 'claude-skills',
+  name: 'claude-agent-skills',
   version: req(join(__dirname, '..', 'package.json')).version,
-  skills: bundled.sort(),
+  skills: sortedSkills,
   dependsOn,
+  descriptions,
 };
 writeFileSync(join(__dirname, '..', 'skills.json'), `${JSON.stringify(manifest, null, 2)}\n`);
-console.log(`\nGenerated skills.json with ${bundled.length} skills.`);
+console.log(`\nGenerated skills.json with ${sortedSkills.length} skills.`);

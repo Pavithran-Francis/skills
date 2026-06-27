@@ -22,12 +22,12 @@ export async function pickScope(flags = {}) {
   return { global: v === 'global' };
 }
 
-export async function pickSkills(names, flags = {}) {
+export async function pickSkills(names, flags = {}, descriptions = {}) {
   if (flags.all) return names;
   if (flags.skill?.length) return flags.skill;
   return guard(await multiselect({
     message: 'Select skills to install (space to toggle, a for all, enter to confirm)',
-    options: names.map(n => ({ value: n, label: n })),
+    options: names.map(n => ({ value: n, label: n, hint: descriptions[n] || undefined })),
     required: true,
   }));
 }

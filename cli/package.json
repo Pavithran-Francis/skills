@@ -1,18 +1,19 @@
 {
-  "name": "pavidev-claude-code-skills",
-  "version": "1.2.1",
-  "description": "Install and manage Pavi's Claude Code skills",
+  "name": "claude-agent-skills",
+  "version": "1.3.0",
+  "description": "Install and manage Pavi's Claude Code agent skills",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "claude-skills": "index.js"
+    "claude-agent-skills": "index.js"
   },
   "files": [
     "index.js",
     "commands",
     "lib",
     "bundled-skills",
-    "skills.json"
+    "skills.json",
+    "README.md"
   ],
   "scripts": {
     "bundle": "node scripts/bundle.js",
@@ -21,7 +22,8 @@
   "dependencies": {
     "@clack/prompts": "^0.10.0",
     "ansis": "^4.3.0",
-    "commander": "^13.1.0"
+    "commander": "^13.1.0",
+    "update-notifier": "^7.3.1"
   },
   "engines": {
     "node": ">=18"

@@ -10,6 +10,8 @@ import { runRemove } from './commands/remove.js';
 import { runList } from './commands/list.js';
 import { runSync } from './commands/sync.js';
 import { runCheck } from './commands/check.js';
+import { runExport } from './commands/exportSkills.js';
+import { runImport } from './commands/importSkills.js';
 import { CliCancel } from './lib/prompts.js';
 
 const req = createRequire(import.meta.url);
@@ -73,6 +75,23 @@ program
   .option('-g, --global', 'Check global skills')
   .option('-p, --project', 'Check project skills')
   .action(opts => runCheck(opts));
+
+program
+  .command('export')
+  .description('Export lockfile for sharing with teammates')
+  .option('-g, --global', 'Export global lockfile')
+  .option('-p, --project', 'Export project lockfile')
+  .option('--file <path>', 'Write to file instead of stdout')
+  .action(opts => runExport(opts));
+
+program
+  .command('import')
+  .description('Import a shared lockfile and install those skills')
+  .option('-g, --global', 'Install into global scope')
+  .option('-p, --project', 'Install into project scope')
+  .option('--file <path>', 'Lockfile to import (required)')
+  .option('-y, --yes', 'Skip confirmation')
+  .action(opts => runImport(opts));
 
 program.parseAsync().catch(err => {
   if (err instanceof CliCancel) process.exit(0);

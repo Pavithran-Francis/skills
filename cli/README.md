@@ -1,18 +1,18 @@
-# pavidev-claude-code-skills
+# claude-agent-skills
 
 Install and manage Pavi's Claude Code agent skills via an interactive CLI.
 
 ## Usage
 
 ```bash
-npx pavidev-claude-code-skills
+npx claude-agent-skills
 ```
 
 Or install globally for a persistent command:
 
 ```bash
-npm install -g pavidev-claude-code-skills
-claude-skills
+npm install -g claude-agent-skills
+claude-agent-skills
 ```
 
 ## What it does
@@ -26,7 +26,7 @@ Skills are installed into:
 | Global  | `~/.claude/skills/` + `~/.agents/skills/` |
 | Project | `.claude/skills/` in current dir   |
 
-A lockfile (`~/.claude/claude-skills-lock.json` or `.claude/claude-skills-lock.json`) tracks every installed skill with a SHA-256 hash so updates and drift can be detected.
+A lockfile (`~/.claude/claude-agent-skills-lock.json` or `.claude/claude-agent-skills-lock.json`) tracks every installed skill with a SHA-256 hash so updates and drift can be detected.
 
 ## Menu options
 
@@ -47,13 +47,13 @@ Press **Escape** at any sub-prompt to go back to the main menu.
 All menu options are also available as direct subcommands:
 
 ```bash
-claude-skills add --global --all          # install everything globally
-claude-skills add --skill grilling tdd    # install specific skills
-claude-skills update --global             # update all with new versions
-claude-skills remove --project            # interactive remove (project scope)
-claude-skills list --global               # show installed skills
-claude-skills sync --global               # restore from lockfile
-claude-skills check --project             # health check
+claude-agent-skills add --global --all          # install everything globally
+claude-agent-skills add --skill grilling tdd    # install specific skills
+claude-agent-skills update --global             # update all with new versions
+claude-agent-skills remove --project            # interactive remove (project scope)
+claude-agent-skills list --global               # show installed skills
+claude-agent-skills sync --global               # restore from lockfile
+claude-agent-skills check --project             # health check
 ```
 
 ## Included skills

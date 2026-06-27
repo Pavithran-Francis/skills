@@ -1,6 +1,14 @@
 import { select, isCancel, cancel, outro } from '@clack/prompts';
+import updateNotifier from 'update-notifier';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { showIntro } from '../lib/banner.js';
 import { CliCancel } from '../lib/prompts.js';
+
+const req = createRequire(import.meta.url);
+const pkg = req(join(dirname(fileURLToPath(import.meta.url)), '..', 'package.json'));
+updateNotifier({ pkg }).notify();
 import { runAdd } from './add.js';
 import { runUpdate } from './update.js';
 import { runRemove } from './remove.js';

@@ -34,11 +34,8 @@ export async function runAdd(opts = {}) {
   const scope = resolveScope({ global: scopeFlags.global });
   await ensureDirs(scope);
 
-  // Let user pick the skills they explicitly want
-  const userSelected = await pickSkills(bundled.map(s => s.name), opts);
-
-  // Expand to include transitive dependencies
   const manifest = loadManifest();
+  const userSelected = await pickSkills(bundled.map(s => s.name), opts, manifest.descriptions ?? {});
   const { ordered, addedBy } = expandDependencies(manifest, userSelected);
 
   const linkType = await pickLinkType(opts);
