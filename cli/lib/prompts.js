@@ -45,14 +45,14 @@ export async function pickSkills(names, flags = {}, descriptions = {}) {
 export async function pickLinkType(flags = {}) {
   if (flags.copy) return 'copy';
   if (flags.symlink) return 'symlink';
-  return guard(await select({
+  return inlineSelect({
     message: 'Materialize skills as',
+    hint: '↑↓ navigate · enter select · esc back',
     options: [
-      { value: 'copy',    label: 'Copy (safe for npx — recommended)' },
-      { value: 'symlink', label: 'Symlink (requires a persistent global install)' },
+      { value: 'copy',    label: 'Copy',    hint: 'safe for npx — recommended' },
+      { value: 'symlink', label: 'Symlink', hint: 'requires a persistent global install' },
     ],
-    initialValue: 'copy',
-  }));
+  }).catch(e => { if (e?.isCancel) throw new CliCancel(); throw e; });
 }
 
 export async function confirmProceed(message) {
