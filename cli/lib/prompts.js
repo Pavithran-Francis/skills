@@ -1,6 +1,7 @@
-import { select, multiselect, confirm, isCancel } from '@clack/prompts';
+import { select, confirm, isCancel } from '@clack/prompts';
 import ansis from 'ansis';
 import { skillColor, white, muted, divider } from './theme.js';
+import { skillPicker } from './picker.js';
 
 export class CliCancel extends Error {}
 
@@ -28,23 +29,17 @@ export async function pickSkills(names, flags = {}, descriptions = {}) {
   if (flags.all) return names;
   if (flags.skill?.length) return flags.skill;
 
-  // Hard cap so descriptions never wrap — single line always fits ≥80 col terminals.
-  // prefix(4) + name(32) + divider(3) + desc(45) = 84 chars total.
-  const DESC_MAX = 45;
-  function fitDesc(s) {
-    if (!s) return '';
-    return s.length <= DESC_MAX ? s : s.slice(0, DESC_MAX - 1) + '…';
+  try {
+    const result = await skillPicker({
+      message: 'Select skills',
+      options: names.map(n => ({ value: n, label: n, description: descriptions[n] || '' })),
+    });
+    if (result === null) throw new CliCancel();
+    return result;
+  } catch (e) {
+    if (e?.isCancel) throw new CliCancel();
+    throw e;
   }
-
-  return guard(await multiselect({
-    message: 'Select skills  (space to toggle, a for all, enter to confirm)',
-    options: names.map((n, i) => {
-      const name = skillColor(i)(ansis.bold(n.padEnd(32)));
-      const desc = descriptions[n] ? white(fitDesc(descriptions[n])) : '';
-      return { value: n, label: name + divider + desc };
-    }),
-    required: true,
-  }));
 }
 
 export async function pickLinkType(flags = {}) {
