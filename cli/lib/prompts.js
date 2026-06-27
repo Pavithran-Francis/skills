@@ -28,14 +28,12 @@ export async function pickSkills(names, flags = {}, descriptions = {}) {
   if (flags.all) return names;
   if (flags.skill?.length) return flags.skill;
 
-  // Calculate description width from actual terminal columns.
-  // prefix=4 (clack's "□ "), nameCol=32, divider=3 (" │ ")
-  const termWidth = process.stdout.columns || 100;
-  const descWidth = Math.max(20, termWidth - 4 - 32 - 3);
-
+  // Hard cap so descriptions never wrap — single line always fits ≥80 col terminals.
+  // prefix(4) + name(32) + divider(3) + desc(45) = 84 chars total.
+  const DESC_MAX = 45;
   function fitDesc(s) {
     if (!s) return '';
-    return s.length <= descWidth ? s : s.slice(0, descWidth - 1) + '…';
+    return s.length <= DESC_MAX ? s : s.slice(0, DESC_MAX - 1) + '…';
   }
 
   return guard(await multiselect({
