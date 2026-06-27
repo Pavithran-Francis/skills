@@ -5,8 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { runHub } from './commands/hub.js';
 import { runAdd } from './commands/add.js';
+import { runUpdate } from './commands/update.js';
+import { runRemove } from './commands/remove.js';
 import { runList } from './commands/list.js';
 import { runSync } from './commands/sync.js';
+import { runCheck } from './commands/check.js';
 import { CliCancel } from './lib/prompts.js';
 
 const req = createRequire(import.meta.url);
@@ -35,6 +38,22 @@ program
   .action(opts => runAdd(opts));
 
 program
+  .command('update')
+  .description('Update installed skills to latest bundled version')
+  .option('-g, --global', 'Update global skills')
+  .option('-p, --project', 'Update project skills')
+  .option('-y, --yes', 'Skip confirmation prompt')
+  .action(opts => runUpdate(opts));
+
+program
+  .command('remove')
+  .description('Remove installed skills')
+  .option('-g, --global', 'Remove from global')
+  .option('-p, --project', 'Remove from project')
+  .option('-y, --yes', 'Skip confirmation prompt')
+  .action(opts => runRemove(opts));
+
+program
   .command('list')
   .description('List installed skills and their health status')
   .option('-g, --global', 'List global skills')
@@ -47,6 +66,13 @@ program
   .option('-g, --global', 'Sync global skills')
   .option('-p, --project', 'Sync project skills')
   .action(opts => runSync(opts));
+
+program
+  .command('check')
+  .description('Check health and update status of installed skills')
+  .option('-g, --global', 'Check global skills')
+  .option('-p, --project', 'Check project skills')
+  .action(opts => runCheck(opts));
 
 program.parseAsync().catch(err => {
   if (err instanceof CliCancel) process.exit(0);
