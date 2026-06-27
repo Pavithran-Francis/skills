@@ -38,12 +38,11 @@ export async function skillPicker({ message, options }) {
   const numCols = Math.max(1, Math.floor((termW - 2) / colW));
   const numRows = Math.ceil(options.length / numCols);
 
-  // Fixed layout heights
-  const HEADER   = 2;
-  const GRID_H   = numRows;
-  const SEP      = 1;
-  const DESC_H   = Math.max(5, Math.min(8, termH - HEADER - GRID_H - SEP - 3));
-  const FOOTER   = 1;
+  // Layout heights — DESC_H is computed dynamically per render from wrapped lines
+  const HEADER = 2;
+  const GRID_H = numRows;
+  const SEP    = 1;
+  const FOOTER = 1;
 
   let cursor = 0;
   const sel  = new Set();
@@ -84,16 +83,14 @@ export async function skillPicker({ message, options }) {
       lines.push(row);
     }
 
-    // Separator + description
-    lines.push(muted('├' + '─'.repeat(Math.min(termW - 2, 78)) + '┤'));
-
+    // Separator + full description — all lines, no cap
     const focused = options[cursor];
     const desc    = focused?.description ?? '';
-    // Cap wrap at 72 chars so descriptions always break into multiple lines
     const wrapW   = Math.min(termW - 6, 72);
-    const wrapped = desc ? wordWrap(desc, wrapW) : [];
-    for (let i = 0; i < DESC_H; i++) {
-      const line = wrapped[i] ?? '';
+    const wrapped = desc ? wordWrap(desc, wrapW) : [''];
+
+    lines.push(muted('├' + '─'.repeat(Math.min(termW - 2, 78)) + '┤'));
+    for (const line of wrapped) {
       lines.push(muted('│ ') + white(line));
     }
 

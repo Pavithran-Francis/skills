@@ -18,18 +18,15 @@ function extractDescription(skillDir) {
       if (t.startsWith('#') || t.startsWith('<!--') || t.startsWith('>')) continue;
 
       if (!t) {
-        // Blank line: stop after collecting at least one chunk
-        if (collecting) break;
+        if (collecting) break; // stop at end of first paragraph
         continue;
       }
 
       chunks.push(t);
       collecting = true;
-      if (chunks.join(' ').length >= 180) break;
     }
 
-    const full = chunks.join(' ');
-    return full.length > 200 ? full.slice(0, 199) + '…' : full;
+    return chunks.join(' '); // full first paragraph, no character limit
   } catch { /* skip */ }
   return '';
 }
